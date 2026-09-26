@@ -19,14 +19,14 @@
 <div class="eyebrow">TOUCAN STORE // DIGITAL GAME HUB</div>
 <h1>YOUR GAMES.<br>ONE ACCOUNT.</h1>
 <p>Create your Toucan Games account here. The same account is designed to carry across future Toucan games, while each game keeps its own saves, inventory, progression and other game-specific data.</p>
-<button class="btn" id="accountBtn">CREATE / SIGN IN</button>
+<button class="btn" id="accountBtn" href="account.html">CREATE / SIGN IN</a>
 </section>
 <section class="grid">
 <article class="game"><span class="tag">COMING ONLINE</span><h2>GEOMETRIC SPACE MISSION V2</h2><p>Arcade space combat with ships, weapons, pilots, progression and missions.</p><div class="status">ACCOUNT INTEGRATION READY</div></article>
 <article class="game"><span class="tag">TOUCAN GAME</span><h2>MORE GAMES</h2><p>Future Toucan Games titles can use the same master account instead of making you register again.</p><div class="status">LIBRARY SYSTEM // BUILDING</div></article>
 <article class="game"><span class="tag">STORE</span><h2>GAME LIBRARY</h2><p>Purchases, ownership and entitlements will live here before a game launches its own gameplay systems.</p><div class="status">PURCHASING // NEXT PHASE</div></article>
 </section>
-<section class="panel" id="panel">
+<section class="panel" id="panel" style="display:none">
 <h2 id="panelTitle">TOUCAN ACCOUNT</h2>
 <form id="form">
 <div class="field"><label>USERNAME / CALLSIGN</label><input id="username" minlength="3" maxlength="24" required placeholder="TOUCAN-01"></div>
@@ -45,8 +45,8 @@ const $=id=>document.getElementById(id);
 let mode="signup";
 function message(t,ok=false){$("message").textContent=t;$("message").className="message"+(ok?" ok":"")}
 function setMode(next){mode=next;$("panelTitle").textContent=mode==="signup"?"CREATE TOUCAN ACCOUNT":"SIGN IN TO TOUCAN GAMES";$("submit").textContent=mode==="signup"?"CREATE ACCOUNT":"SIGN IN";$("switch").textContent=mode==="signup"?"I ALREADY HAVE AN ACCOUNT":"CREATE A NEW ACCOUNT";$("username").style.display=mode==="signup"?"block":"none";$("username").required=mode==="signup";message("")}
-async function refresh(){const {data:{session}}=await sb.auth.getSession();if(session?.user){$("who").textContent=session.user.email||"SIGNED IN";$("signOut").style.display="block";$("accountBtn").textContent="ACCOUNT ACTIVE";}else{$("who").textContent="NOT SIGNED IN";$("signOut").style.display="none";$("accountBtn").textContent="CREATE / SIGN IN"}}
-$("accountBtn").onclick=()=>{$("panel").classList.add("open");setMode(mode==="signup"?"signup":"signin")};$("switch").onclick=()=>setMode(mode==="signup"?"signin":"signup");
+async function refresh(){const {data:{session}}=await sb.auth.getSession();if(session?.user){$("who").textContent=session.user.email||"SIGNED IN";$("signOut").style.display="block";$("accountBtn").textContent="MY ACCOUNT";}else{$("who").textContent="NOT SIGNED IN";$("signOut").style.display="none";$("accountBtn").textContent="CREATE ACCOUNT"}}
+
 $("form").onsubmit=async e=>{e.preventDefault();const email=$("email").value.trim(),password=$("password").value,username=$("username").value.trim();if(mode==="signin"){message("SIGNING IN...");const {data,error}=await sb.auth.signInWithPassword({email,password});if(error)return message(error.message);message("ACCESS GRANTED // WELCOME BACK.",true);await refresh();return}message("CREATING ACCOUNT...");const {data,error}=await sb.auth.signUp({email,password,options:{data:{username}}});if(error)return message(error.message);if(!data.session)return message("ACCOUNT CREATED // CHECK EMAIL VERIFICATION SETTINGS IN TOUCAN GAMES.",true);const p=await sb.from("account_profiles").upsert({id:data.user.id,username,display_name:username,updated_at:new Date().toISOString()});if(p.error)return message("ACCOUNT CREATED, PROFILE SYNC FAILED // "+p.error.message);message("ACCOUNT CREATED // WELCOME TO TOUCAN GAMES.",true);await refresh()};
 $("signOut").onclick=async()=>{await sb.auth.signOut();await refresh()};
 refresh();
