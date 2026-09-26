@@ -4,7 +4,18 @@ const params=new URLSearchParams(location.search);
 const next=params.get("next");
 const safeNext=next && next.startsWith("https://gsm-v2-tg.netlify.app/") ? next : null;
 function msg(id,t,ok=false){$(id).textContent=t;$(id).className="msg"+(ok?" ok":"")}
-async function goNext(){if(safeNext){location.replace(safeNext);return}location.replace("index.html")}
+async function goNext(){
+  if(safeNext){
+    const{data:{session}}=await sb.auth.getSession();
+    if(session?.access_token){
+      const handoff=safeNext+"#toucan_access_token="+encodeURIComponent(session.access_token)+"&toucan_refresh_token="+encodeURIComponent(session.refresh_token||"");
+      location.replace(handoff);
+      return;
+    }
+    location.replace(safeNext);return;
+  }
+  location.replace("index.html")
+}
 async function existing(){const{data:{session}}=await sb.auth.getSession();if(session?.user){$("title").textContent="ACCOUNT FOUND";msg("signupMsg","SIGNED IN AS "+(session.user.email||"TOUCAN USER"),true);if(safeNext)setTimeout(goNext,350)}}
 $("signupTab").onclick=()=>{$("signupTab").classList.add("active");$("loginTab").classList.remove("active");$("signupForm").style.display="block";$("loginForm").style.display="none";$("title").textContent="CREATE YOUR ACCOUNT"};
 $("loginTab").onclick=()=>{$("loginTab").classList.add("active");$("signupTab").classList.remove("active");$("signupForm").style.display="none";$("loginForm").style.display="block";$("title").textContent="SIGN IN TO TOUCAN"};
