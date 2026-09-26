@@ -2,7 +2,7 @@
 const sb=window.supabase.createClient("https://eylmduhkjrvpowvuejex.supabase.co","sb_publishable_a23t-KV73iSoBA29igsnAQ_phuSvlEb"),$=id=>document.getElementById(id);
 const params=new URLSearchParams(location.search);
 const next=params.get("next");
-const safeNext=next && next.startsWith("https://aayushgup80.github.io/Geometric-Space-Mission-v2/") ? next : null;
+const safeNext=next && next.startsWith("https://gsm-v2-tg.netlify.app/") ? next : null;
 function msg(id,t,ok=false){$(id).textContent=t;$(id).className="msg"+(ok?" ok":"")}
 async function goNext(){if(safeNext){location.replace(safeNext);return}location.replace("index.html")}
 async function existing(){const{data:{session}}=await sb.auth.getSession();if(session?.user){$("title").textContent="ACCOUNT FOUND";msg("signupMsg","SIGNED IN AS "+(session.user.email||"TOUCAN USER"),true);if(safeNext)setTimeout(goNext,350)}}
