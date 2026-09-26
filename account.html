@@ -16,7 +16,7 @@ async function goNext(){
   }
   location.replace("index.html")
 }
-async function existing(){const{data:{session}}=await sb.auth.getSession();if(session?.user){$("title").textContent="ACCOUNT FOUND";msg("signupMsg","SIGNED IN AS "+(session.user.email||"TOUCAN USER"),true);if(safeNext)setTimeout(goNext,350)}}
+async function existing(){const{data:{session}}=await sb.auth.getSession();if(session?.user){$("title").textContent="ACCOUNT FOUND";msg("signupMsg","SIGNED IN AS "+(session.user.email||"TOUCAN USER"),true);if(safeNext){msg("signupMsg","SESSION READY // CLICK SIGN IN AGAIN TO CONTINUE TO GSM V2.",true);}}}
 $("signupTab").onclick=()=>{$("signupTab").classList.add("active");$("loginTab").classList.remove("active");$("signupForm").style.display="block";$("loginForm").style.display="none";$("title").textContent="CREATE YOUR ACCOUNT"};
 $("loginTab").onclick=()=>{$("loginTab").classList.add("active");$("signupTab").classList.remove("active");$("signupForm").style.display="none";$("loginForm").style.display="block";$("title").textContent="SIGN IN TO TOUCAN"};
 $("signupForm").onsubmit=async e=>{e.preventDefault();msg("signupMsg","CREATING ACCOUNT...");const{data,error}=await sb.auth.signUp({email:$("signupEmail").value.trim(),password:$("signupPassword").value,options:{data:{username:$("username").value.trim()}}});if(error)return msg("signupMsg",error.message);if(!data.session)return msg("signupMsg","ACCOUNT CREATED // CHECK YOUR EMAIL TO VERIFY IT.",true);msg("signupMsg","ACCOUNT CREATED // WELCOME TO TOUCAN GAMES.",true);setTimeout(goNext,500)};
